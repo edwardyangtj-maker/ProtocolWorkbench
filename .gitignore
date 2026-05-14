@@ -1,0 +1,39 @@
+# Build output
+dist/
+build/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Trae AI
+.trae/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Runtime data
+*.log
+*.jsonl
+
+# PyInstaller temp
+*.spec.bak
+*.manifest
+
+# Project data files (generated at runtime)
+*.json
+!protocol_workbench/resources/default_templates.json
+!build.spec
+dist/ProtocolWorkbench.exe
+
+protocol_workbench/__pycache__/main.cpython-314.pyc
