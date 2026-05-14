@@ -1,0 +1,855 @@
+{
+  "description": "SPI大坝监测 上位机TCP协议模板集 — 覆盖全部命令帧/参数帧/查询帧/上报帧/响应帧",
+  "frame_format": "*JSON#",
+  "templates": [
+    {
+      "section": "═════ 命令帧 (command) — 激光器 ═════",
+      "entries": [
+        {
+          "name": "激光器功率设置",
+          "category": "cmd_laser",
+          "msgType": "command",
+          "theme": "laser_setpower",
+          "content": { "target": "laser", "value": 20 }
+        },
+        {
+          "name": "激光器上电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "laser_poweron",
+          "content": { "target": "laser", "value": 1 }
+        },
+        {
+          "name": "激光器下电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "laser_poweroff",
+          "content": { "target": "laser", "value": 2 }
+        }
+      ]
+    },
+    {
+      "section": "═════ 命令帧 (command) — 可见光相机 ═════",
+      "entries": [
+        {
+          "name": "打开可见光相机",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_open",
+          "content": { "target": "camera" }
+        },
+        {
+          "name": "关闭可见光相机",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_close",
+          "content": { "target": "camera" }
+        },
+        {
+          "name": "设置相机放大倍数",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_setzoom",
+          "content": { "target": "camera", "value": 5 }
+        },
+        {
+          "name": "设置相机颜色",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_setcolor",
+          "content": { "target": "camera", "value": "red" }
+        },
+        {
+          "name": "相机聚焦增",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_focus_inc",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机聚焦减",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_focus_dec",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机上移",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_move_up",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机下移",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_move_down",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机左移",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_move_left",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机右移",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_move_right",
+          "content": { "target": "camera", "value": 1 }
+        },
+        {
+          "name": "相机居中",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "camera_center",
+          "content": { "target": "camera" }
+        }
+      ]
+    },
+    {
+      "section": "═════ 命令帧 (command) — 测距/高精度测距/成像 ═════",
+      "entries": [
+        {
+          "name": "近距离测距-开始",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "range_near",
+          "content": { "target": "range", "value": 1 }
+        },
+        {
+          "name": "近距离测距-停止",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "range_near",
+          "content": { "target": "range", "value": 2 }
+        },
+        {
+          "name": "远距离测距-开始",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "range_far",
+          "content": { "target": "range", "value": 1 }
+        },
+        {
+          "name": "远距离测距-停止",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "range_far",
+          "content": { "target": "range", "value": 2 }
+        },
+        {
+          "name": "高精度单点测距",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "high_range_single",
+          "content": { "target": "high_range", "value": 1 }
+        },
+        {
+          "name": "高精度多点测距",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "high_range_multi",
+          "content": { "target": "high_range", "value": 1 }
+        },
+        {
+          "name": "停止高精度测距",
+          "category": "cmd_range",
+          "msgType": "command",
+          "theme": "high_range_single",
+          "content": { "target": "high_range", "value": 2 }
+        },
+        {
+          "name": "单幅采集-开始",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_single",
+          "content": { "target": "imaging", "value": 1 }
+        },
+        {
+          "name": "单幅采集-停止",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_single",
+          "content": { "target": "imaging", "value": 2 }
+        },
+        {
+          "name": "多次采集-开始",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_multi",
+          "content": { "target": "imaging", "value": 1 }
+        },
+        {
+          "name": "多次采集-停止",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_multi",
+          "content": { "target": "imaging", "value": 2 }
+        },
+        {
+          "name": "连续采集-开始",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_continuous",
+          "content": { "target": "imaging", "value": 1 }
+        },
+        {
+          "name": "连续采集-停止",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_continuous",
+          "content": { "target": "imaging", "value": 2 }
+        },
+        {
+          "name": "扫描采集-开始",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_scan",
+          "content": { "target": "imaging", "value": 1 }
+        },
+        {
+          "name": "扫描采集-停止",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_scan",
+          "content": { "target": "imaging", "value": 2 }
+        },
+        {
+          "name": "停止采集",
+          "category": "cmd_camera",
+          "msgType": "command",
+          "theme": "imaging_single",
+          "content": { "target": "imaging", "value": 2 }
+        }
+      ]
+    },
+    {
+      "section": "═════ 命令帧 (command) — 组件连接 ═════",
+      "entries": [
+        {
+          "name": "TDC连接",
+          "category": "cmd_connect",
+          "msgType": "command",
+          "theme": "tdc_connect",
+          "content": { "target": "tdc" }
+        },
+        {
+          "name": "振镜连接",
+          "category": "cmd_connect",
+          "msgType": "command",
+          "theme": "galvanometer_connect",
+          "content": { "target": "galvanometer" }
+        }
+      ]
+    },
+    {
+      "section": "═════ 命令帧 (command) — 转台控制 ═════",
+      "entries": [
+        {
+          "name": "转台水平轴转动",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_x_rotate",
+          "content": { "target": "turntable", "value": 12.5 }
+        },
+        {
+          "name": "转台俯仰轴转动",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_y_rotate",
+          "content": { "target": "turntable", "value": 3.2 }
+        },
+        {
+          "name": "转台水平轴归零",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_x_zero",
+          "content": { "target": "turntable" }
+        },
+        {
+          "name": "转台俯仰轴归零",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_y_zero",
+          "content": { "target": "turntable" }
+        },
+        {
+          "name": "转台全部归零",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_zero_all",
+          "content": { "target": "turntable" }
+        },
+        {
+          "name": "转台抱闸",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_brake",
+          "content": { "target": "turntable", "value": 1 }
+        },
+        {
+          "name": "转台上移",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_move_up",
+          "content": { "target": "turntable", "value": 1.0 }
+        },
+        {
+          "name": "转台下移",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_move_down",
+          "content": { "target": "turntable", "value": 1.0 }
+        },
+        {
+          "name": "转台左移",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_move_left",
+          "content": { "target": "turntable", "value": 1.0 }
+        },
+        {
+          "name": "转台右移",
+          "category": "cmd_turntable",
+          "msgType": "command",
+          "theme": "turntable_move_right",
+          "content": { "target": "turntable", "value": 1.0 }
+        }
+      ]
+    },
+    {
+      "section": "═════ 命令帧 (command) — 上下电 ═════",
+      "entries": [
+        {
+          "name": "探测器上电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "detector_poweron",
+          "content": { "target": "detector", "value": 1 }
+        },
+        {
+          "name": "探测器下电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "detector_poweroff",
+          "content": { "target": "detector", "value": 2 }
+        },
+        {
+          "name": "加热片上电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "heater_poweron",
+          "content": { "target": "heater", "value": 1 }
+        },
+        {
+          "name": "加热片下电",
+          "category": "cmd_power",
+          "msgType": "command",
+          "theme": "heater_poweroff",
+          "content": { "target": "heater", "value": 2 }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 扫描配置 ═════",
+      "entries": [
+        {
+          "name": "扫描参数全量配置",
+          "category": "param_scan_config",
+          "msgType": "parameter",
+          "theme": "scan_config_set",
+          "content": {
+            "target": "scan_config",
+            "scan_period_days": 720,
+            "scan_time_s": 30,
+            "scan_rows": 1,
+            "scan_cols": 1,
+            "start_azimuth_deg": 0,
+            "start_pitch_deg": 0,
+            "single_horizontal_move_deg": 0,
+            "single_vertical_move_deg": 0
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 测距点配置 ═════",
+      "entries": [
+        {
+          "name": "写入测距点",
+          "category": "param_monitor_point",
+          "msgType": "parameter",
+          "theme": "monitor_point_write",
+          "content": {
+            "target": "monitor_point",
+            "point_id": "POINT_001",
+            "description": "监测点1",
+            "risk_type": "low",
+            "range_time_s": 5,
+            "monitor_time_s": 60,
+            "azimuth_deg": 12.5,
+            "pitch_deg": 3.2,
+            "calibration_distance_m": 2415.0,
+            "alarm_threshold_mm": 10.0,
+            "laser_power_board1_val": 0,
+            "laser_power_board2_val": 0
+          }
+        },
+        {
+          "name": "修改测距点",
+          "category": "param_monitor_point",
+          "msgType": "parameter",
+          "theme": "monitor_point_modify",
+          "content": {
+            "target": "monitor_point",
+            "point_id": "POINT_001",
+            "description": "监测点1-已修改",
+            "risk_type": "middle",
+            "range_time_s": 10,
+            "monitor_time_s": 120,
+            "azimuth_deg": 15.0,
+            "pitch_deg": 5.0,
+            "calibration_distance_m": 2500.0,
+            "alarm_threshold_mm": 15.0
+          }
+        },
+        {
+          "name": "归零测距点",
+          "category": "param_monitor_point",
+          "msgType": "parameter",
+          "theme": "monitor_point_reset",
+          "content": {
+            "target": "monitor_point",
+            "point_id": "POINT_001"
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 测距参数 ═════",
+      "entries": [
+        {
+          "name": "测距范围配置",
+          "category": "param_range_param",
+          "msgType": "parameter",
+          "theme": "range_scope_set",
+          "content": {
+            "target": "range",
+            "start_distance_m": 0,
+            "end_distance_m": 5000
+          }
+        },
+        {
+          "name": "累积时间配置",
+          "category": "param_range_param",
+          "msgType": "parameter",
+          "theme": "range_accumulate_time_set",
+          "content": {
+            "target": "range",
+            "accumulate_time_ms": 1000
+          }
+        },
+        {
+          "name": "测距距离配置",
+          "category": "param_range_param",
+          "msgType": "parameter",
+          "theme": "range_distance_set",
+          "content": {
+            "target": "range",
+            "distance_m": 2500.0
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 成像参数 ═════",
+      "entries": [
+        {
+          "name": "成像参数保存",
+          "category": "param_imaging_param",
+          "msgType": "parameter",
+          "theme": "imaging_param_set",
+          "content": {
+            "target": "imaging",
+            "single_capture_duration_s": 2,
+            "magnification": 1,
+            "capture_mode": "single",
+            "capture_count": 1
+          }
+        },
+        {
+          "name": "单幅采集时长配置",
+          "category": "param_imaging_param",
+          "msgType": "parameter",
+          "theme": "imaging_duration_set",
+          "content": {
+            "target": "imaging",
+            "single_capture_duration_s": 5
+          }
+        },
+        {
+          "name": "放大倍数配置",
+          "category": "param_imaging_param",
+          "msgType": "parameter",
+          "theme": "imaging_magnification_set",
+          "content": {
+            "target": "imaging",
+            "magnification": 2
+          }
+        },
+        {
+          "name": "采集模式配置",
+          "category": "param_imaging_param",
+          "msgType": "parameter",
+          "theme": "imaging_mode_set",
+          "content": {
+            "target": "imaging",
+            "capture_mode": "scan"
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 相机/标定参数 ═════",
+      "entries": [
+        {
+          "name": "相机参数保存",
+          "category": "param_camera_param",
+          "msgType": "parameter",
+          "theme": "camera_param_set",
+          "content": {
+            "target": "camera",
+            "color": "red",
+            "position_x": 500,
+            "position_y": 300,
+            "step": 1
+          }
+        },
+        {
+          "name": "相机标定点保存",
+          "category": "param_camera_param",
+          "msgType": "parameter",
+          "theme": "camera_calib_point_set",
+          "content": {
+            "target": "camera",
+            "zoom": 5,
+            "calib_x": 500,
+            "calib_y": 300
+          }
+        },
+        {
+          "name": "相机位置保存",
+          "category": "param_camera_param",
+          "msgType": "parameter",
+          "theme": "camera_position_set",
+          "content": {
+            "target": "camera",
+            "position_x": 500,
+            "position_y": 300
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 参数帧 (parameter) — 风扇参数 ═════",
+      "entries": [
+        {
+          "name": "机箱风扇转速配置",
+          "category": "param_fan_param",
+          "msgType": "parameter",
+          "theme": "chassis_fan_speed_set",
+          "content": {
+            "target": "fan",
+            "speed_percent": 60
+          }
+        },
+        {
+          "name": "光箱风扇转速配置",
+          "category": "param_fan_param",
+          "msgType": "parameter",
+          "theme": "opticalbox_fan_speed_set",
+          "content": {
+            "target": "fan",
+            "speed_percent": 70
+          }
+        },
+        {
+          "name": "风扇参数保存",
+          "category": "param_fan_param",
+          "msgType": "parameter",
+          "theme": "fan_param_set",
+          "content": {
+            "target": "fan",
+            "chassis_fan_speed_percent": 60,
+            "opticalbox_fan_speed_percent": 70
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 查询帧 (query) ═════",
+      "entries": [
+        {
+          "name": "查询组件状态-激光器",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "laser" }
+        },
+        {
+          "name": "查询组件状态-探测器",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "detector" }
+        },
+        {
+          "name": "查询组件状态-TDC",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "tdc" }
+        },
+        {
+          "name": "查询组件状态-振镜",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "galvanometer" }
+        },
+        {
+          "name": "查询组件状态-相机",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "camera" }
+        },
+        {
+          "name": "查询组件状态-转台",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "turntable" }
+        },
+        {
+          "name": "查询组件状态-风扇",
+          "category": "query_component",
+          "msgType": "query",
+          "theme": "component_status",
+          "content": { "component_code": "fan" }
+        },
+        {
+          "name": "查询设备参数(测距配置)",
+          "category": "query_range_config",
+          "msgType": "query",
+          "theme": "range_config_query",
+          "content": {
+            "task_id": "TASK_RANGE_001",
+            "point_code": "MP001",
+            "request_params": [
+              "range_mode", "range_type", "accumulate_time_ms",
+              "range_time_s", "monitor_time_s", "calibration_distance_m",
+              "azimuth_deg", "pitch_deg", "alarm_threshold_mm",
+              "centroid_m", "daily_centroid_m",
+              "daily_centroid_displacement_mm",
+              "result_csv_file_name", "ftp_remote_path"
+            ]
+          }
+        },
+        {
+          "name": "查询相机标定点",
+          "category": "query_camera_calib",
+          "msgType": "query",
+          "theme": "camera_calib_point_query",
+          "content": { "target": "camera" }
+        }
+      ]
+    },
+    {
+      "section": "═════ 上报帧 (report) ═════",
+      "entries": [
+        {
+          "name": "设备状态上报",
+          "category": "report_device_status",
+          "msgType": "report",
+          "theme": "device_status",
+          "content": {
+            "components": [
+              { "component_code": "tdc", "connection_status": "connected" },
+              { "component_code": "galvanometer", "connection_status": "connected" },
+              { "component_code": "br_laser", "connection_status": "disconnected" }
+            ],
+            "power_status": { "laser": "on", "detector": "on", "heater": "off" },
+            "fan_status": { "chassis_fan_speed": 60, "optical_box_fan_speed": 70 }
+          }
+        },
+        {
+          "name": "扫描成像上报",
+          "category": "report_img",
+          "msgType": "report",
+          "theme": "scan_img",
+          "content": {
+            "batch_id": "PUZZLE_${now_ms}",
+            "total_area_count": 1,
+            "current_area_no": 1,
+            "total_rows": 60,
+            "total_cols": 50,
+            "current_row": 0,
+            "current_col": 0,
+            "point_index": 1,
+            "file_paths": {
+              "dep_csv": "/data/puzzle/PUZZLE_001/dep-0.csv",
+              "ref_csv": "/data/puzzle/PUZZLE_001/ref-0.csv"
+            },
+            "img_resolution": { "width": 128, "height": 128 }
+          }
+        },
+        {
+          "name": "单次高精度测距结果上报",
+          "category": "report_high_range",
+          "msgType": "report",
+          "theme": "single_high_range",
+          "content": {
+            "batch_id": "range_${now_ms}",
+            "point_id": "1",
+            "displacement_mm": 1.234,
+            "centroid_val_mm": 1.234,
+            "file_paths": { "ret_csv": "/data/range/range_001/ret-0.csv" }
+          }
+        },
+        {
+          "name": "扫描高精度测距结果上报",
+          "category": "report_high_range",
+          "msgType": "report",
+          "theme": "scan_high_range",
+          "content": {
+            "batch_id": "range_${now_ms}",
+            "point_id": "1",
+            "displacement_mm": 2.567,
+            "centroid_val_mm": 2.567,
+            "file_paths": { "ret_csv": "/data/range/range_001/ret-0.csv" }
+          }
+        },
+        {
+          "name": "测距结果上报",
+          "category": "report_range_result",
+          "msgType": "report",
+          "theme": "range_result",
+          "content": {
+            "point_code": "MP001",
+            "displacement": 1.5,
+            "temperature": 25.3,
+            "centroid_val_mm": 1.2,
+            "batch_id": "batch_${now_ms}",
+            "status": "正常",
+            "record_time_ms": "${now_ms}"
+          }
+        },
+        {
+          "name": "任务进度上报",
+          "category": "report_task",
+          "msgType": "report",
+          "theme": "task_progress",
+          "content": {
+            "task_id": "TASK_001",
+            "task_type": "scan_img",
+            "current": 103,
+            "total": 3000,
+            "percent": 3.43,
+            "status": "running",
+            "message": "scan running"
+          }
+        },
+        {
+          "name": "任务完成上报",
+          "category": "report_task",
+          "msgType": "report",
+          "theme": "task_result",
+          "content": {
+            "task_id": "TASK_001",
+            "task_type": "scan_img",
+            "status": "success",
+            "code": 200,
+            "message": "scan completed",
+            "result": { "total_files": 3000, "batch_id": "PUZZLE_001" }
+          }
+        },
+        {
+          "name": "任务失败上报",
+          "category": "report_task",
+          "msgType": "report",
+          "theme": "task_result",
+          "content": {
+            "task_id": "TASK_001",
+            "task_type": "scan_img",
+            "status": "failed",
+            "code": 500,
+            "message": "scan interrupted",
+            "result": { "total_files": 100, "batch_id": "PUZZLE_001" }
+          }
+        },
+        {
+          "name": "告警上报",
+          "category": "report_alarm",
+          "msgType": "report",
+          "theme": "alarm",
+          "content": {
+            "alarm_id": "ALARM_${uuid_short}",
+            "device_id": "DEVICE_001",
+            "point_id": "POINT_001",
+            "alarm_type": "device_alarm",
+            "level": "warning",
+            "message": "监测点距离超过告警阈值",
+            "metric_value": 15.6,
+            "threshold": 10.0,
+            "unit": "mm"
+          }
+        },
+        {
+          "name": "心跳上报",
+          "category": "heartbeat",
+          "msgType": "report",
+          "theme": "heartbeat",
+          "content": {
+            "status": "online",
+            "uptime_s": 3600
+          }
+        }
+      ]
+    },
+    {
+      "section": "═════ 响应帧 (response) — 简化 body 格式 ═════",
+      "entries": [
+        {
+          "name": "通用成功ACK响应",
+          "category": "response",
+          "msgType": "response",
+          "theme": "",
+          "content": {},
+          "_response_body": { "code": 200, "message": "success", "data": {} }
+        },
+        {
+          "name": "错误响应-参数无效",
+          "category": "response",
+          "msgType": "response",
+          "theme": "",
+          "content": {},
+          "_response_body": { "code": 8001, "message": "param_invalid", "data": { "detail": "value out of range" } }
+        },
+        {
+          "name": "通用ACK响应",
+          "category": "ack",
+          "msgType": "response",
+          "theme": "",
+          "content": {},
+          "_response_header_msgId": "${received_msgId}",
+          "_response_body": { "code": 200, "message": "success", "data": { "info": "received" } }
+        }
+      ]
+    }
+  ]
+}

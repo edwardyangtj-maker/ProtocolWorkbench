@@ -1,0 +1,277 @@
+{
+  "id": "4eaea5909f81",
+  "name": "新项目",
+  "version": "1.0.0",
+  "description": "",
+  "environments": [],
+  "endpoints": [
+    {
+      "id": "8dc84362bab8",
+      "name": "测试",
+      "type": "tcp_client",
+      "host": "0.0.0.0",
+      "port": 9001,
+      "remote_host": "127.0.0.1",
+      "remote_port": 9000,
+      "path": "/",
+      "http_method": "POST",
+      "custom_headers": {},
+      "reply_routes": [],
+      "payload_type": "json",
+      "frame_rule_id": "fr_start_end_1",
+      "connect_timeout_ms": 10000,
+      "read_timeout_ms": 30000,
+      "auto_reconnect": false,
+      "heartbeat_config": {
+        "enabled": true,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    }
+  ],
+  "frame_rules": [
+    {
+      "id": "fr_start_end_1",
+      "name": "星井帧(*JSON#)",
+      "mode": "start_end",
+      "delimiter": "\n",
+      "start_flag": "*",
+      "end_flag": "#",
+      "length_field_offset": 0,
+      "length_field_size": 4,
+      "byte_order": "big",
+      "length_includes_header": false,
+      "fixed_length": 0
+    }
+  ],
+  "message_templates": [
+    {
+      "id": "a036071514d6",
+      "name": "resp",
+      "category": "message",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${received_msgId}\",\n    \"msgType\": \"response\",\n    \"timestamp\": ${now_ms},\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"code\": 200,\n    \"message\": \"success\"\n  }\n}",
+      "tree_nodes": [
+        {
+          "key": "header",
+          "value": "",
+          "node_type": "object",
+          "enabled": true,
+          "description": "",
+          "children": [
+            {
+              "key": "msgId",
+              "value": "${received_msgId}",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "msgType",
+              "value": "response",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "timestamp",
+              "value": "${now_ms}",
+              "node_type": "number",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "from",
+              "value": "client",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "to",
+              "value": "server",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "key": "body",
+          "value": "",
+          "node_type": "object",
+          "enabled": true,
+          "description": "",
+          "children": [
+            {
+              "key": "code",
+              "value": "200",
+              "node_type": "number",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "message",
+              "value": "success",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            }
+          ]
+        }
+      ],
+      "variables": [],
+      "ack_config": {
+        "enabled": true,
+        "template_id": "a036071514d6",
+        "timeout_ms": 5000,
+        "match_rules": [],
+        "fail_action": "continue",
+        "auto_reply": true
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000,
+        "match_rules": [],
+        "fail_action": "continue"
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      },
+      "match_rules": [],
+      "send_mode": "send_only"
+    },
+    {
+      "id": "71ab217d7e51",
+      "name": "report",
+      "category": "message",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"report_scan_img_001\",\n    \"msgType\": \"report\",\n    \"timestamp\": 1716213600123,\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"scan_img\",\n    \"content\": {\n      \"target\": \"imaging\"\n    }\n  }\n}\n",
+      "tree_nodes": [
+        {
+          "key": "header",
+          "value": "",
+          "node_type": "object",
+          "enabled": true,
+          "description": "",
+          "children": [
+            {
+              "key": "msgId",
+              "value": "report_scan_img_001",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "msgType",
+              "value": "report",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "timestamp",
+              "value": "1716213600123",
+              "node_type": "number",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "from",
+              "value": "client",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "to",
+              "value": "server",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            }
+          ]
+        },
+        {
+          "key": "body",
+          "value": "",
+          "node_type": "object",
+          "enabled": true,
+          "description": "",
+          "children": [
+            {
+              "key": "theme",
+              "value": "scan_img",
+              "node_type": "string",
+              "enabled": true,
+              "description": ""
+            },
+            {
+              "key": "content",
+              "value": "",
+              "node_type": "object",
+              "enabled": true,
+              "description": "",
+              "children": [
+                {
+                  "key": "target",
+                  "value": "imaging",
+                  "node_type": "string",
+                  "enabled": true,
+                  "description": ""
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [],
+      "ack_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 5000,
+        "match_rules": [],
+        "fail_action": "continue",
+        "auto_reply": false
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000,
+        "match_rules": [],
+        "fail_action": "continue"
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      },
+      "match_rules": [],
+      "send_mode": "send_only"
+    }
+  ],
+  "scenarios": [],
+  "variables": {},
+  "created_at": "2026-05-09T11:00:01.744718",
+  "updated_at": "2026-05-09T11:15:03.732711"
+}

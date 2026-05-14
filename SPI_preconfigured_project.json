@@ -1,0 +1,2913 @@
+{
+  "id": "ff300ecd40984a0d9c67517e60da459c",
+  "name": "SPI大坝监测-协议联调项目",
+  "description": "预配置项目，含85个SPI协议模板+2个TCP端点+2个环境。\n文件→打开项目→选择本文件即可使用。帧格式:*JSON#",
+  "frame_rules": [
+    {
+      "id": "b9bacfeeb03d",
+      "name": "SPI-*JSON#",
+      "mode": "start_end",
+      "delimiter": "\n",
+      "start_flag": "*",
+      "end_flag": "#",
+      "length_field_offset": 0,
+      "length_field_size": 4,
+      "byte_order": "big",
+      "length_includes_header": false,
+      "fixed_length": 0
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "30ef55b5ad6d",
+      "name": "上位机模拟-TCP Server",
+      "type": "tcp_server",
+      "host": "0.0.0.0",
+      "port": 9003,
+      "remote_host": "",
+      "remote_port": 0,
+      "payload_type": "json",
+      "frame_rule_id": "b9bacfeeb03d",
+      "connect_timeout_ms": 5000,
+      "read_timeout_ms": 30000,
+      "auto_reconnect": false,
+      "heartbeat_enabled": false,
+      "bind_path": "",
+      "ws_path": "/ws",
+      "method": "GET",
+      "headers": {},
+      "use_tls": false,
+      "description": "模拟真实上位机监听端口 9003（注意：9000已被后端占用）"
+    },
+    {
+      "id": "3afda2806b91",
+      "name": "上位机模拟-TCP Client",
+      "type": "tcp_client",
+      "host": "127.0.0.1",
+      "port": 0,
+      "remote_host": "127.0.0.1",
+      "remote_port": 9000,
+      "payload_type": "json",
+      "frame_rule_id": "b9bacfeeb03d",
+      "connect_timeout_ms": 5000,
+      "read_timeout_ms": 30000,
+      "auto_reconnect": true,
+      "heartbeat_enabled": false,
+      "bind_path": "",
+      "ws_path": "/ws",
+      "method": "GET",
+      "headers": {},
+      "use_tls": false,
+      "description": "模拟上位机主动连接后端"
+    }
+  ],
+  "environments": [
+    {
+      "id": "35d449cccca1",
+      "name": "SPI上位机模拟环境",
+      "description": "模拟上位机通信环境",
+      "endpoint_ids": [],
+      "variables": {},
+      "log_dir": "./logs",
+      "auto_start_endpoints": false,
+      "allow_parallel": true
+    },
+    {
+      "id": "0c9c996904c3",
+      "name": "SPI后端测试环境",
+      "description": "后端 MiniSPIDamMonitor 接收验证",
+      "endpoint_ids": [],
+      "variables": {},
+      "log_dir": "./logs",
+      "auto_start_endpoints": false,
+      "allow_parallel": true
+    }
+  ],
+  "message_templates": [
+    {
+      "id": "8d0e761d8e89",
+      "name": "激光器功率设置",
+      "category": "cmd_laser",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"laser_setpower\",\n    \"content\": {\n      \"target\": \"laser\",\n      \"value\": 20\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "9b060aa206fc",
+      "name": "激光器上电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"laser_poweron\",\n    \"content\": {\n      \"target\": \"laser\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "2e542a013f86",
+      "name": "激光器下电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"laser_poweroff\",\n    \"content\": {\n      \"target\": \"laser\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c2aefdabf59d",
+      "name": "打开可见光相机",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_open\",\n    \"content\": {\n      \"target\": \"camera\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d7fd83ae0f19",
+      "name": "关闭可见光相机",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_close\",\n    \"content\": {\n      \"target\": \"camera\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "de25273490c1",
+      "name": "设置相机放大倍数",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_setzoom\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 5\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "f3db819dd717",
+      "name": "设置相机颜色",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_setcolor\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": \"red\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "0a139cf890ce",
+      "name": "相机聚焦增",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_focus_inc\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "62b3c63d6afe",
+      "name": "相机聚焦减",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_focus_dec\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "12b17c8bb43a",
+      "name": "相机上移",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_move_up\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "b338e9e0db57",
+      "name": "相机下移",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_move_down\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "0e5a934115a2",
+      "name": "相机左移",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_move_left\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "7dd73fea2225",
+      "name": "相机右移",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_move_right\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "8d561a38b932",
+      "name": "相机居中",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_center\",\n    \"content\": {\n      \"target\": \"camera\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "814d66a3588a",
+      "name": "近距离测距-开始",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_near\",\n    \"content\": {\n      \"target\": \"range\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "27a4b2bc7b48",
+      "name": "近距离测距-停止",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_near\",\n    \"content\": {\n      \"target\": \"range\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "17fd63550791",
+      "name": "远距离测距-开始",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_far\",\n    \"content\": {\n      \"target\": \"range\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "dfb5de9f634c",
+      "name": "远距离测距-停止",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_far\",\n    \"content\": {\n      \"target\": \"range\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "7ef4d48b21bc",
+      "name": "高精度单点测距",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"high_range_single\",\n    \"content\": {\n      \"target\": \"high_range\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "99c9fa41e3ae",
+      "name": "高精度多点测距",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"high_range_multi\",\n    \"content\": {\n      \"target\": \"high_range\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "e3a310d93492",
+      "name": "停止高精度测距",
+      "category": "cmd_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"high_range_single\",\n    \"content\": {\n      \"target\": \"high_range\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "eefe33921f91",
+      "name": "单幅采集-开始",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_single\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d6db700a760f",
+      "name": "单幅采集-停止",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_single\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "fe85e9c3b7a8",
+      "name": "多次采集-开始",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_multi\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "69c6a16c42ef",
+      "name": "多次采集-停止",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_multi\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "4f3615eb1cb0",
+      "name": "连续采集-开始",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_continuous\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "7c0efb9a7625",
+      "name": "连续采集-停止",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_continuous\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "ef3369ab29f0",
+      "name": "扫描采集-开始",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_scan\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "793135cdc439",
+      "name": "扫描采集-停止",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_scan\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "cc3f0a652edd",
+      "name": "停止采集",
+      "category": "cmd_camera",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_single\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "a079b681f87e",
+      "name": "TDC连接",
+      "category": "cmd_connect",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"tdc_connect\",\n    \"content\": {\n      \"target\": \"tdc\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "6e0b4c4cab1d",
+      "name": "振镜连接",
+      "category": "cmd_connect",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"galvanometer_connect\",\n    \"content\": {\n      \"target\": \"galvanometer\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "9137d93ad75d",
+      "name": "转台水平轴转动",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_x_rotate\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 12.5\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "939b247ef231",
+      "name": "转台俯仰轴转动",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_y_rotate\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 3.2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "891b6d6d71a3",
+      "name": "转台水平轴归零",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_x_zero\",\n    \"content\": {\n      \"target\": \"turntable\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "39304ad104eb",
+      "name": "转台俯仰轴归零",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_y_zero\",\n    \"content\": {\n      \"target\": \"turntable\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "bfb259855d83",
+      "name": "转台全部归零",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_zero_all\",\n    \"content\": {\n      \"target\": \"turntable\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d3ef6d9a54c4",
+      "name": "转台抱闸",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_brake\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "788583b8895e",
+      "name": "转台上移",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_move_up\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 1.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "e44c86dd0218",
+      "name": "转台下移",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_move_down\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 1.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "3638f59b881e",
+      "name": "转台左移",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_move_left\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 1.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c1a42f15ad89",
+      "name": "转台右移",
+      "category": "cmd_turntable",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"turntable_move_right\",\n    \"content\": {\n      \"target\": \"turntable\",\n      \"value\": 1.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "02aa78228c16",
+      "name": "探测器上电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"detector_poweron\",\n    \"content\": {\n      \"target\": \"detector\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "33d106c00f5d",
+      "name": "探测器下电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"detector_poweroff\",\n    \"content\": {\n      \"target\": \"detector\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "22e7ea5cbcce",
+      "name": "加热片上电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"heater_poweron\",\n    \"content\": {\n      \"target\": \"heater\",\n      \"value\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "ac89b9b518c6",
+      "name": "加热片下电",
+      "category": "cmd_power",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"command\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"heater_poweroff\",\n    \"content\": {\n      \"target\": \"heater\",\n      \"value\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d3b0ed4f0878",
+      "name": "扫描参数全量配置",
+      "category": "param_scan_config",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"scan_config_set\",\n    \"content\": {\n      \"target\": \"scan_config\",\n      \"scan_period_days\": 720,\n      \"scan_time_s\": 30,\n      \"scan_rows\": 1,\n      \"scan_cols\": 1,\n      \"start_azimuth_deg\": 0,\n      \"start_pitch_deg\": 0,\n      \"single_horizontal_move_deg\": 0,\n      \"single_vertical_move_deg\": 0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "68f09d471335",
+      "name": "写入测距点",
+      "category": "param_monitor_point",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"monitor_point_write\",\n    \"content\": {\n      \"target\": \"monitor_point\",\n      \"point_id\": \"POINT_001\",\n      \"description\": \"监测点1\",\n      \"risk_type\": \"low\",\n      \"range_time_s\": 5,\n      \"monitor_time_s\": 60,\n      \"azimuth_deg\": 12.5,\n      \"pitch_deg\": 3.2,\n      \"calibration_distance_m\": 2415.0,\n      \"alarm_threshold_mm\": 10.0,\n      \"laser_power_board1_val\": 0,\n      \"laser_power_board2_val\": 0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "751077b739f9",
+      "name": "修改测距点",
+      "category": "param_monitor_point",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"monitor_point_modify\",\n    \"content\": {\n      \"target\": \"monitor_point\",\n      \"point_id\": \"POINT_001\",\n      \"description\": \"监测点1-已修改\",\n      \"risk_type\": \"middle\",\n      \"range_time_s\": 10,\n      \"monitor_time_s\": 120,\n      \"azimuth_deg\": 15.0,\n      \"pitch_deg\": 5.0,\n      \"calibration_distance_m\": 2500.0,\n      \"alarm_threshold_mm\": 15.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "df3b7ee83379",
+      "name": "归零测距点",
+      "category": "param_monitor_point",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"monitor_point_reset\",\n    \"content\": {\n      \"target\": \"monitor_point\",\n      \"point_id\": \"POINT_001\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d77a8ed334e8",
+      "name": "测距范围配置",
+      "category": "param_range_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_scope_set\",\n    \"content\": {\n      \"target\": \"range\",\n      \"start_distance_m\": 0,\n      \"end_distance_m\": 5000\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "083725372d59",
+      "name": "累积时间配置",
+      "category": "param_range_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_accumulate_time_set\",\n    \"content\": {\n      \"target\": \"range\",\n      \"accumulate_time_ms\": 1000\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "8b13cfa75b6b",
+      "name": "测距距离配置",
+      "category": "param_range_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_distance_set\",\n    \"content\": {\n      \"target\": \"range\",\n      \"distance_m\": 2500.0\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "d8055816dd8e",
+      "name": "成像参数保存",
+      "category": "param_imaging_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_param_set\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"single_capture_duration_s\": 2,\n      \"magnification\": 1,\n      \"capture_mode\": \"single\",\n      \"capture_count\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "18bbe888f84d",
+      "name": "单幅采集时长配置",
+      "category": "param_imaging_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_duration_set\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"single_capture_duration_s\": 5\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "f877b27a5526",
+      "name": "放大倍数配置",
+      "category": "param_imaging_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_magnification_set\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"magnification\": 2\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "e0ea044b3205",
+      "name": "采集模式配置",
+      "category": "param_imaging_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"imaging_mode_set\",\n    \"content\": {\n      \"target\": \"imaging\",\n      \"capture_mode\": \"scan\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c12652b85f07",
+      "name": "相机参数保存",
+      "category": "param_camera_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_param_set\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"color\": \"red\",\n      \"position_x\": 500,\n      \"position_y\": 300,\n      \"step\": 1\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c4264b203c87",
+      "name": "相机标定点保存",
+      "category": "param_camera_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_calib_point_set\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"zoom\": 5,\n      \"calib_x\": 500,\n      \"calib_y\": 300\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "1a2ab05cc7ef",
+      "name": "相机位置保存",
+      "category": "param_camera_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_position_set\",\n    \"content\": {\n      \"target\": \"camera\",\n      \"position_x\": 500,\n      \"position_y\": 300\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "09c7e4874ba7",
+      "name": "机箱风扇转速配置",
+      "category": "param_fan_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"chassis_fan_speed_set\",\n    \"content\": {\n      \"target\": \"fan\",\n      \"speed_percent\": 60\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "e806f369ae66",
+      "name": "光箱风扇转速配置",
+      "category": "param_fan_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"opticalbox_fan_speed_set\",\n    \"content\": {\n      \"target\": \"fan\",\n      \"speed_percent\": 70\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "342af286445c",
+      "name": "风扇参数保存",
+      "category": "param_fan_param",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"parameter\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"fan_param_set\",\n    \"content\": {\n      \"target\": \"fan\",\n      \"chassis_fan_speed_percent\": 60,\n      \"opticalbox_fan_speed_percent\": 70\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "64d866f7cebc",
+      "name": "查询组件状态-激光器",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"laser\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c2a41348e03f",
+      "name": "查询组件状态-探测器",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"detector\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "fcb199a96432",
+      "name": "查询组件状态-TDC",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"tdc\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "848671d54720",
+      "name": "查询组件状态-振镜",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"galvanometer\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "9e2d123716eb",
+      "name": "查询组件状态-相机",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"camera\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "ffab15ff6633",
+      "name": "查询组件状态-转台",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"turntable\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "fd598a11c654",
+      "name": "查询组件状态-风扇",
+      "category": "query_component",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"component_status\",\n    \"content\": {\n      \"component_code\": \"fan\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "901e171564db",
+      "name": "查询设备参数(测距配置)",
+      "category": "query_range_config",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"range_config_query\",\n    \"content\": {\n      \"task_id\": \"TASK_RANGE_001\",\n      \"point_code\": \"MP001\",\n      \"request_params\": [\n        \"range_mode\",\n        \"range_type\",\n        \"accumulate_time_ms\",\n        \"range_time_s\",\n        \"monitor_time_s\",\n        \"calibration_distance_m\",\n        \"azimuth_deg\",\n        \"pitch_deg\",\n        \"alarm_threshold_mm\",\n        \"centroid_m\",\n        \"daily_centroid_m\",\n        \"daily_centroid_displacement_mm\",\n        \"result_csv_file_name\",\n        \"ftp_remote_path\"\n      ]\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "26e4c7ca6411",
+      "name": "查询相机标定点",
+      "category": "query_camera_calib",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"query\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"theme\": \"camera_calib_point_query\",\n    \"content\": {\n      \"target\": \"camera\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "7344c6468482",
+      "name": "设备状态上报",
+      "category": "report_device_status",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"device_status\",\n    \"content\": {\n      \"components\": [\n        {\n          \"component_code\": \"tdc\",\n          \"connection_status\": \"connected\"\n        },\n        {\n          \"component_code\": \"galvanometer\",\n          \"connection_status\": \"connected\"\n        },\n        {\n          \"component_code\": \"br_laser\",\n          \"connection_status\": \"disconnected\"\n        }\n      ],\n      \"power_status\": {\n        \"laser\": \"on\",\n        \"detector\": \"on\",\n        \"heater\": \"off\"\n      },\n      \"fan_status\": {\n        \"chassis_fan_speed\": 60,\n        \"optical_box_fan_speed\": 70\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "22e322b9b404",
+      "name": "扫描成像上报",
+      "category": "report_img",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"scan_img\",\n    \"content\": {\n      \"batch_id\": \"PUZZLE_${now_ms}\",\n      \"total_area_count\": 1,\n      \"current_area_no\": 1,\n      \"total_rows\": 60,\n      \"total_cols\": 50,\n      \"current_row\": 0,\n      \"current_col\": 0,\n      \"point_index\": 1,\n      \"file_paths\": {\n        \"dep_csv\": \"/data/puzzle/PUZZLE_001/dep-0.csv\",\n        \"ref_csv\": \"/data/puzzle/PUZZLE_001/ref-0.csv\"\n      },\n      \"img_resolution\": {\n        \"width\": 128,\n        \"height\": 128\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "f0827c05ae60",
+      "name": "单次高精度测距结果上报",
+      "category": "report_high_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"single_high_range\",\n    \"content\": {\n      \"batch_id\": \"range_${now_ms}\",\n      \"point_id\": \"1\",\n      \"displacement_mm\": 1.234,\n      \"centroid_val_mm\": 1.234,\n      \"file_paths\": {\n        \"ret_csv\": \"/data/range/range_001/ret-0.csv\"\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "b929db9b9635",
+      "name": "扫描高精度测距结果上报",
+      "category": "report_high_range",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"scan_high_range\",\n    \"content\": {\n      \"batch_id\": \"range_${now_ms}\",\n      \"point_id\": \"1\",\n      \"displacement_mm\": 2.567,\n      \"centroid_val_mm\": 2.567,\n      \"file_paths\": {\n        \"ret_csv\": \"/data/range/range_001/ret-0.csv\"\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "dc961c4d7733",
+      "name": "测距结果上报",
+      "category": "report_range_result",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"range_result\",\n    \"content\": {\n      \"point_code\": \"MP001\",\n      \"displacement\": 1.5,\n      \"temperature\": 25.3,\n      \"centroid_val_mm\": 1.2,\n      \"batch_id\": \"batch_${now_ms}\",\n      \"status\": \"正常\",\n      \"record_time_ms\": \"${now_ms}\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "db76009b0be7",
+      "name": "任务进度上报",
+      "category": "report_task",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"task_progress\",\n    \"content\": {\n      \"task_id\": \"TASK_001\",\n      \"task_type\": \"scan_img\",\n      \"current\": 103,\n      \"total\": 3000,\n      \"percent\": 3.43,\n      \"status\": \"running\",\n      \"message\": \"scan running\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "e4223a4b836f",
+      "name": "任务完成上报",
+      "category": "report_task",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"task_result\",\n    \"content\": {\n      \"task_id\": \"TASK_001\",\n      \"task_type\": \"scan_img\",\n      \"status\": \"success\",\n      \"code\": 200,\n      \"message\": \"scan completed\",\n      \"result\": {\n        \"total_files\": 3000,\n        \"batch_id\": \"PUZZLE_001\"\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "ccab9c26853b",
+      "name": "任务失败上报",
+      "category": "report_task",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"task_result\",\n    \"content\": {\n      \"task_id\": \"TASK_001\",\n      \"task_type\": \"scan_img\",\n      \"status\": \"failed\",\n      \"code\": 500,\n      \"message\": \"scan interrupted\",\n      \"result\": {\n        \"total_files\": 100,\n        \"batch_id\": \"PUZZLE_001\"\n      }\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "9400198f6f6f",
+      "name": "告警上报",
+      "category": "report_alarm",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"alarm\",\n    \"content\": {\n      \"alarm_id\": \"ALARM_${uuid_short}\",\n      \"device_id\": \"DEVICE_001\",\n      \"point_id\": \"POINT_001\",\n      \"alarm_type\": \"device_alarm\",\n      \"level\": \"warning\",\n      \"message\": \"监测点距离超过告警阈值\",\n      \"metric_value\": 15.6,\n      \"threshold\": 10.0,\n      \"unit\": \"mm\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "c9245384027a",
+      "name": "心跳上报",
+      "category": "heartbeat",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"report\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"client\",\n    \"to\": \"server\"\n  },\n  \"body\": {\n    \"theme\": \"heartbeat\",\n    \"content\": {\n      \"status\": \"online\",\n      \"uptime_s\": 3600\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "909f04483431",
+      "name": "通用成功ACK响应",
+      "category": "response",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"response\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {}\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "70c96cf9493f",
+      "name": "错误响应-参数无效",
+      "category": "response",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${uuid_short}\",\n    \"msgType\": \"response\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"code\": 8001,\n    \"message\": \"param_invalid\",\n    \"data\": {\n      \"detail\": \"value out of range\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "send_only",
+      "match_rules": [],
+      "ack_config": {
+        "enabled": false,
+        "auto_reply": false,
+        "template_id": "",
+        "timeout_ms": 5000
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    },
+    {
+      "id": "6ec37a6c1d5d",
+      "name": "通用ACK响应",
+      "category": "ack",
+      "payload_type": "json",
+      "frame_rule_id": "",
+      "content": "{\n  \"header\": {\n    \"msgId\": \"${received_msgId}\",\n    \"msgType\": \"response\",\n    \"timestamp\": \"${now_ms}\",\n    \"from\": \"server\",\n    \"to\": \"client\"\n  },\n  \"body\": {\n    \"code\": 200,\n    \"message\": \"success\",\n    \"data\": {\n      \"info\": \"received\"\n    }\n  }\n}",
+      "tree_nodes": [],
+      "variables": [],
+      "send_mode": "receive_auto_reply",
+      "match_rules": [
+        {
+          "path": "header.msgType",
+          "operator": "eq",
+          "value": "command"
+        }
+      ],
+      "ack_config": {
+        "enabled": true,
+        "auto_reply": true,
+        "template_id": "",
+        "timeout_ms": 5000,
+        "match_rules": [
+          {
+            "path": "header.msgType",
+            "operator": "eq",
+            "value": "command"
+          }
+        ]
+      },
+      "response_config": {
+        "enabled": false,
+        "template_id": "",
+        "timeout_ms": 10000
+      },
+      "heartbeat_config": {
+        "enabled": false,
+        "mode": "active",
+        "interval_ms": 30000,
+        "template_id": "",
+        "response_template_id": "",
+        "timeout_ms": 10000,
+        "max_fail_count": 3,
+        "fail_action": "disconnect"
+      }
+    }
+  ],
+  "scenarios": [],
+  "variables": {
+    "point_id": "POINT_001",
+    "task_id": "TASK_001"
+  },
+  "created_at": "2026-05-11T19:19:32.498743",
+  "updated_at": "2026-05-11T19:19:32.498762"
+}
