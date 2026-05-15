@@ -267,6 +267,7 @@ class MessageEditorPanel(QWidget):
         self.logger = logger
         self.project_manager = project_manager
         self.current_template: MessageTemplate | None = None
+        self._current_endpoint_id: str = ""
         self._setup_ui()
         self.template_combo.currentIndexChanged.connect(self._on_template_selected)
 
@@ -414,12 +415,24 @@ class MessageEditorPanel(QWidget):
         if idx >= 0:
             self.send_mode_combo.setCurrentIndex(idx)
 
+        if template.endpoint_id:
+            for i in range(self.endpoint_combo.count()):
+                if self.endpoint_combo.itemData(i) == template.endpoint_id:
+                    self.endpoint_combo.setCurrentIndex(i)
+                    break
+
+    def set_endpoint_filter(self, endpoint_id: str):
+        self._current_endpoint_id = endpoint_id
+        self.refresh()
+
     def refresh(self):
         self.template_combo.blockSignals(True)
         self.template_combo.clear()
         project = self._get_project()
         if project:
             for tpl in project.message_templates:
+                if self._current_endpoint_id and tpl.endpoint_id and tpl.endpoint_id != self._current_endpoint_id:
+                    continue
                 self.template_combo.addItem(tpl.name, tpl.id)
 
             self.endpoint_combo.blockSignals(True)
@@ -457,7 +470,7 @@ class MessageEditorPanel(QWidget):
             return
         name, ok = QInputDialog.getText(self, "新建模板", "模板名称:", text="新模板")
         if ok and name:
-            tpl = MessageTemplate(id=new_id(), name=name, content="{\n  \n}")
+            tpl = MessageTemplate(id=new_id(), name=name, endpoint_id=self._current_endpoint_id, content="{\n  \n}")
             project.message_templates.append(tpl)
             self.load_template(tpl)
             self.refresh()

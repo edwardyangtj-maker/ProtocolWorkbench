@@ -321,10 +321,12 @@ class EndpointPanel(QWidget):
                 self.frame_combo.addItem(f"{fr.name} ({fr.mode.value})", fr.id)
             self.frame_combo.blockSignals(False)
 
+            current_ep_id = self.current_endpoint.id if self.current_endpoint else ""
             self.send_template_combo.blockSignals(True)
             self.send_template_combo.clear()
             for tpl in project.message_templates:
-                self.send_template_combo.addItem(tpl.name, tpl.id)
+                if not current_ep_id or tpl.endpoint_id == current_ep_id or not tpl.endpoint_id:
+                    self.send_template_combo.addItem(tpl.name, tpl.id)
             self.send_template_combo.blockSignals(False)
 
         self.endpoint_combo.blockSignals(False)
@@ -339,7 +341,6 @@ class EndpointPanel(QWidget):
                 break
 
     def set_environment_filter(self, env_name: str, endpoint_ids: list, mode: str):
-        """根据环境过滤端点显示"""
         mode_label = "🟢 上位机模拟" if mode == "upper_computer" else "🔵 后端测试"
         self.env_mode_label.setText(mode_label)
         if mode == "upper_computer":
@@ -363,20 +364,6 @@ class EndpointPanel(QWidget):
             for fr in project.frame_rules:
                 self.frame_combo.addItem(f"{fr.name} ({fr.mode.value})", fr.id)
             self.frame_combo.blockSignals(False)
-
-            self.send_template_combo.blockSignals(True)
-            self.send_template_combo.clear()
-            for tpl in project.message_templates:
-                show = False
-                if mode == "upper_computer":
-                    show = tpl.category.value.startswith("report") or tpl.category.value in ("response", "ack", "heartbeat")
-                else:
-                    show = (tpl.category.value.startswith("cmd_") or
-                            tpl.category.value.startswith("param_") or
-                            tpl.category.value.startswith("query_"))
-                if show:
-                    self.send_template_combo.addItem(tpl.name, tpl.id)
-            self.send_template_combo.blockSignals(False)
 
         self.endpoint_combo.blockSignals(False)
 
@@ -410,6 +397,14 @@ class EndpointPanel(QWidget):
                 self._load_endpoint_config(ep)
                 self.update_endpoint_state(ep.id, self.runtime.get_endpoint_state(ep.id))
                 break
+
+        self.send_template_combo.blockSignals(True)
+        self.send_template_combo.clear()
+        if project and ep_id:
+            for tpl in project.message_templates:
+                if tpl.endpoint_id == ep_id or not tpl.endpoint_id:
+                    self.send_template_combo.addItem(tpl.name, tpl.id)
+        self.send_template_combo.blockSignals(False)
 
     def _load_endpoint_config(self, ep: EndpointConfig):
         self.name_edit.setText(ep.name)

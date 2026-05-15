@@ -317,16 +317,63 @@ class MainWindow(QMainWindow):
         self.logger.info(f"新建项目: {project.name}")
 
     def _ensure_spi_templates(self, project: Project):
-        """确保项目中存在 SPI 默认协议模板（去重，仅补缺）"""
         self._load_default_spi_templates(project, skip_existing=True)
+        self._migrate_template_endpoint_binding(project)
+
+    def _migrate_template_endpoint_binding(self, project: Project):
+        orphan_tpls = [t for t in project.message_templates if not t.endpoint_id]
+        if not orphan_tpls:
+            return
+        server_eps = [ep for ep in project.endpoints if ep.type.value in ("tcp_server", "http_server", "websocket_server")]
+        client_eps = [ep for ep in project.endpoints if ep.type.value in ("tcp_client", "http_client", "websocket_client")]
+        report_cats = {"report_device_status", "report_alarm", "report_img", "report_high_range", "report_range_result", "report_task", "heartbeat", "response", "ack"}
+        if server_eps:
+            for tpl in orphan_tpls:
+                if tpl.category.value in report_cats:
+                    tpl.endpoint_id = server_eps[0].id
+                elif client_eps:
+                    tpl.endpoint_id = client_eps[0].id
+                elif project.endpoints:
+                    tpl.endpoint_id = project.endpoints[0].id
+        elif len(project.endpoints) >= 2:
+            up_ep = None
+            back_ep = None
+            for ep in project.endpoints:
+                name_lower = ep.name.lower()
+                if "server" in name_lower:
+                    up_ep = ep
+                elif "client" in name_lower:
+                    back_ep = ep
+            if not up_ep:
+                for ep in project.endpoints:
+                    if "上位" in ep.name:
+                        up_ep = ep
+                        break
+            if not back_ep:
+                for ep in project.endpoints:
+                    if "后端" in ep.name or "测试" in ep.name:
+                        back_ep = ep
+                        break
+            if not up_ep:
+                up_ep = project.endpoints[0]
+            if not back_ep:
+                back_ep = project.endpoints[-1]
+            for tpl in orphan_tpls:
+                if tpl.category.value in report_cats:
+                    tpl.endpoint_id = up_ep.id
+                else:
+                    tpl.endpoint_id = back_ep.id
+        elif project.endpoints:
+            for tpl in orphan_tpls:
+                tpl.endpoint_id = project.endpoints[0].id
+        for env in project.environments:
+            if not env.endpoint_ids:
+                env.endpoint_ids = [ep.id for ep in project.endpoints]
+        migrated = sum(1 for t in orphan_tpls if t.endpoint_id)
+        if migrated:
+            self.logger.info(f"已迁移 {migrated} 个模板绑定到端点")
 
     def _load_default_spi_templates(self, project: Project, skip_existing: bool = False):
-        """加载 SPI 默认协议模板到项目中
-
-        Args:
-            project: 目标项目
-            skip_existing: True=仅在项目模板数为0时才加载（避免重复注入）
-        """
         import json as _json
         try:
             if skip_existing and project.message_templates:
@@ -342,17 +389,18 @@ class MainWindow(QMainWindow):
             with open(tmpl_path, "r", encoding="utf-8") as f:
                 data = _json.load(f)
             templates = data.get("templates", [])
+            first_ep_id = project.endpoints[0].id if project.endpoints else ""
             added = 0
             for section in templates:
                 for entry in section.get("entries", []):
                     tpl = MessageTemplate(
                         name=entry.get("name", ""),
+                        endpoint_id=first_ep_id,
                         category=TemplateCategory(entry.get("category", "message")),
                         payload_type=PayloadType(entry.get("payload_type", "json")),
                     )
                     msg_type = entry.get("msgType", "")
                     is_report = (msg_type == "report")
-                    # 响应帧使用 ${received_msgId} 以回填被响应指令的 msgId
                     msg_id = entry.get("_response_header_msgId", "${uuid_short}")
                     header = {
                         "msgId": msg_id,
@@ -662,15 +710,25 @@ class MainWindow(QMainWindow):
             self.runtime_manager.variable_engine = self.variable_engine
             self.runtime_manager.template_engine = TemplateEngine(self.variable_engine)
             self.project_label.setText(f"项目: {project.name}")
-        self._refresh_all_panels()
+        if hasattr(self, '_active_env_id') and self._active_env_id:
+            self._on_environment_selected(self._active_env_id)
+        else:
+            self._refresh_all_panels()
 
     def _on_endpoint_selected(self, endpoint_id: str):
         self.work_tabs.setCurrentIndex(0)
         self.endpoint_panel.select_endpoint(endpoint_id)
+        self.message_editor.set_endpoint_filter(endpoint_id)
 
     def _on_template_selected(self, template_id: str):
         self.work_tabs.setCurrentIndex(2)
         self.template_panel.select_template(template_id)
+        project = self.project_manager.current_project
+        if project:
+            for tpl in project.message_templates:
+                if tpl.id == template_id and tpl.endpoint_id:
+                    self.message_editor.set_endpoint_filter(tpl.endpoint_id)
+                    break
 
     def _on_scenario_selected(self, scenario_id: str):
         self.work_tabs.setCurrentIndex(3)
@@ -701,7 +759,6 @@ class MainWindow(QMainWindow):
                 break
 
     def _on_environment_selected(self, env_id: str):
-        """切换当前活动环境：过滤端点、启动/停止端点"""
         project = self.project_manager.current_project
         if not project:
             return
@@ -718,29 +775,21 @@ class MainWindow(QMainWindow):
         is_up_comp = ("上位机" in env.name or "upper" in env.name.lower() or "up" in env.name.lower())
         self._active_env_mode = "upper_computer" if is_up_comp else "backend"
 
-        # 自动关联端点：如果环境没有端点，按类型自动分配
         if not env.endpoint_ids:
             for ep in project.endpoints:
-                if is_up_comp and ep.type.value == "tcp_server":
+                if is_up_comp and ("server" in ep.name.lower() or ep.type.value in ("tcp_server", "http_server", "websocket_server")):
                     env.endpoint_ids.append(ep.id)
-                elif not is_up_comp and ep.type.value == "tcp_client":
+                elif not is_up_comp and ("client" in ep.name.lower() or ep.type.value in ("tcp_client", "http_client", "websocket_client")):
                     env.endpoint_ids.append(ep.id)
+            if not env.endpoint_ids:
+                env.endpoint_ids = [ep.id for ep in project.endpoints]
         self._active_env_endpoint_ids = list(env.endpoint_ids)
 
-        # 先停止所有端点
-        asyncio.create_task(self.runtime_manager.stop_all())
-
-        # 过滤端点面板
         self.endpoint_panel.set_environment_filter(env.name, env.endpoint_ids, self._active_env_mode)
+        self.template_panel.set_endpoint_ids_filter(env.endpoint_ids)
 
-        # 过滤模板面板
-        self.template_panel.set_environment_filter(self._active_env_mode)
-
-        # 启动环境关联的端点
-        for ep_id in env.endpoint_ids:
-            for ep in project.endpoints:
-                if ep.id == ep_id:
-                    asyncio.create_task(self.runtime_manager.start_endpoint(ep))
+        first_ep_id = env.endpoint_ids[0] if env.endpoint_ids else ""
+        self.message_editor.set_endpoint_filter(first_ep_id)
 
         mode_label = "上位机模拟" if is_up_comp else "后端测试"
         self.status_label.setText(f"当前环境: {env.name} [{mode_label}]")
@@ -803,6 +852,7 @@ class MainWindow(QMainWindow):
         if not project:
             return
         template = None
+        ep = None
         ep_name = ""
         for t in project.message_templates:
             if t.id == template_id:
@@ -812,6 +862,8 @@ class MainWindow(QMainWindow):
             if ep.id == endpoint_id:
                 ep_name = ep.name
                 break
+        else:
+            ep = None
         if template:
             rendered = self.runtime_manager.template_engine.render(template)
             display_text = rendered
@@ -831,6 +883,8 @@ class MainWindow(QMainWindow):
             return
         for t in project.message_templates:
             if t.id == template_id:
+                if t.endpoint_id:
+                    self.message_editor.set_endpoint_filter(t.endpoint_id)
                 self.message_editor.load_template(t)
                 self.work_tabs.setCurrentIndex(1)
                 break
@@ -840,6 +894,7 @@ class MainWindow(QMainWindow):
         if not project:
             return
         template = None
+        ep = None
         ep_name = ""
         for t in project.message_templates:
             if t.id == template_id:
@@ -849,6 +904,8 @@ class MainWindow(QMainWindow):
             if ep.id == endpoint_id:
                 ep_name = ep.name
                 break
+        else:
+            ep = None
         if template:
             rendered = self.runtime_manager.template_engine.render(template)
             display_text = rendered
@@ -871,7 +928,6 @@ class MainWindow(QMainWindow):
         self._repopulate_cont_report_combo()
 
     def _repopulate_cont_report_combo(self):
-        """将上报类模板填充到持续上报下拉框"""
         self.cont_report_combo.clear()
         project = self.project_manager.current_project
         if not project:
@@ -882,8 +938,11 @@ class MainWindow(QMainWindow):
             "heartbeat",
         )
         self.cont_report_combo.addItem("-- 选择上报模板 --", "")
+        active_ep_ids = getattr(self, "_active_env_endpoint_ids", [])
         for t in project.message_templates:
             if t.category.value in report_cats:
+                if active_ep_ids and t.endpoint_id and t.endpoint_id not in active_ep_ids:
+                    continue
                 label = f"[{t.category.value}] {t.name}"
                 self.cont_report_combo.addItem(label, t.id)
 

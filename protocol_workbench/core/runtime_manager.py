@@ -85,6 +85,8 @@ class RuntimeManager(QObject):
         ]
         if self._project:
             for tpl in self._project.message_templates:
+                if tpl.endpoint_id and tpl.endpoint_id != endpoint.id:
+                    continue
                 if tpl.ack_config.enabled and tpl.ack_config.auto_reply:
                     self.add_auto_reply(endpoint.id, tpl.ack_config.match_rules, tpl)
                     self.logger.info(f"自动注册回复规则: {tpl.name}")
@@ -310,6 +312,8 @@ class RuntimeManager(QObject):
         # 再实时扫描项目模板：兼容用户修改模板后未重启端点的情况
         if not replied and self._project:
             for tpl in self._project.message_templates:
+                if tpl.endpoint_id and tpl.endpoint_id != endpoint_id:
+                    continue
                 if not (tpl.ack_config.enabled and tpl.ack_config.auto_reply):
                     continue
                 if self.response_matcher.match(data_dict, tpl.ack_config.match_rules):

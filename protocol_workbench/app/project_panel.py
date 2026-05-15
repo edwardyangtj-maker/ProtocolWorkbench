@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QAction, QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTreeWidget, QTreeWidgetItem,
     QPushButton, QLabel, QMenu, QInputDialog, QMessageBox,
-    QHeaderView, QToolBar, QFrame, QDialog, QFormLayout, QLineEdit,
+    QHeaderView, QFrame, QDialog, QFormLayout, QLineEdit,
     QComboBox, QCheckBox, QTableWidget, QTableWidgetItem, QSpinBox,
     QTextEdit, QTabWidget, QDialogButtonBox,
 )
@@ -14,7 +13,7 @@ from protocol_workbench.core.project_manager import ProjectManager
 from protocol_workbench.core.logger_service import LoggerService
 from protocol_workbench.core.models import (
     Project, Environment, EndpointConfig, EndpointType,
-    MessageTemplate, Scenario, FrameRule, TemplateCategory,
+    MessageTemplate, Scenario, FrameRule, FrameMode, TemplateCategory,
 )
 
 
@@ -68,7 +67,7 @@ class ProjectPanel(QWidget):
 
         self.add_tpl_btn = QPushButton("+ 模板")
         self.add_tpl_btn.setFixedHeight(28)
-        self.add_tpl_btn.clicked.connect(self._add_template)
+        self.add_tpl_btn.clicked.connect(self._add_template_to_selected)
         btn_layout.addWidget(self.add_tpl_btn)
 
         layout.addLayout(btn_layout)
@@ -77,7 +76,7 @@ class ProjectPanel(QWidget):
         self.tree.setHeaderHidden(True)
         self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tree.customContextMenuRequested.connect(self._show_context_menu)
-        self.tree.itemDoubleClicked.connect(self._on_item_double_clicked)
+        self.tree.itemClicked.connect(self._on_item_clicked)
         self.tree.setIndentation(16)
         self.tree.setAnimated(True)
         layout.addWidget(self.tree)
@@ -101,11 +100,13 @@ class ProjectPanel(QWidget):
         env_root.setData(0, Qt.UserRole, ("env_root", ""))
         env_root.setExpanded(True)
 
+        first_env = True
         for env in project.environments:
             env_item = QTreeWidgetItem(env_root, [f"🏠 {env.name}"])
             env_item.setData(0, Qt.UserRole, ("environment", env.id))
             env_item.setExpanded(False)
 
+            env_ep_ids = set(env.endpoint_ids)
             for ep_id in env.endpoint_ids:
                 for ep in project.endpoints:
                     if ep.id == ep_id:
@@ -113,33 +114,17 @@ class ProjectPanel(QWidget):
                         ep_item = QTreeWidgetItem(env_item, [f"{icon} {ep.name}"])
                         ep_item.setData(0, Qt.UserRole, ("endpoint", ep.id, ep.name))
 
-        ep_root = QTreeWidgetItem(root, ["📡 端点"])
-        ep_root.setData(0, Qt.UserRole, ("ep_root", ""))
-        ep_root.setExpanded(True)
+                        for tpl in project.message_templates:
+                            if tpl.endpoint_id == ep.id:
+                                tpl_item = QTreeWidgetItem(ep_item, [f"📄 {tpl.name}"])
+                                tpl_item.setData(0, Qt.UserRole, ("template", tpl.id))
 
-        for ep in project.endpoints:
-            icon = self._endpoint_icon(ep.type)
-            ep_item = QTreeWidgetItem(ep_root, [f"{icon} {ep.name}"])
-            ep_item.setData(0, Qt.UserRole, ("endpoint", ep.id, ep.name))
-
-        tpl_root = QTreeWidgetItem(root, ["📋 模板"])
-        tpl_root.setData(0, Qt.UserRole, ("tpl_root", ""))
-        tpl_root.setExpanded(True)
-
-        categories = {}
-        for tpl in project.message_templates:
-            cat = tpl.category.value
-            if cat not in categories:
-                categories[cat] = []
-            categories[cat].append(tpl)
-
-        for cat, templates in categories.items():
-            cat_label = self._category_label(cat)
-            cat_item = QTreeWidgetItem(tpl_root, [cat_label])
-            cat_item.setData(0, Qt.UserRole, ("category", cat))
-            for tpl in templates:
-                tpl_item = QTreeWidgetItem(cat_item, [f"📄 {tpl.name}"])
-                tpl_item.setData(0, Qt.UserRole, ("template", tpl.id))
+            if first_env:
+                for tpl in project.message_templates:
+                    if not tpl.endpoint_id:
+                        tpl_item = QTreeWidgetItem(env_item, [f"📄 {tpl.name}"])
+                        tpl_item.setData(0, Qt.UserRole, ("template", tpl.id))
+                first_env = False
 
         scenario_root = QTreeWidgetItem(root, ["🎬 场景"])
         scenario_root.setData(0, Qt.UserRole, ("scenario_root", ""))
@@ -204,41 +189,24 @@ class ProjectPanel(QWidget):
         }
         return icons.get(ep_type, "📡")
 
-    def _category_label(self, cat: str) -> str:
-        labels = {
-            "message": "📨 消息",
-            "cmd_laser": "⚙ 激光器",
-            "cmd_camera": "⚙ 相机",
-            "cmd_range": "⚙ 测距",
-            "cmd_turntable": "⚙ 转台",
-            "cmd_power": "⚙ 上下电",
-            "cmd_connect": "⚙ 连接",
-            "param_scan_config": "⚙ 扫描配置",
-            "param_monitor_point": "⚙ 测距点",
-            "param_range_param": "⚙ 测距参数",
-            "param_imaging_param": "⚙ 成像参数",
-            "param_camera_param": "⚙ 相机参数",
-            "param_fan_param": "⚙ 风扇参数",
-            "query_component": "🔍 组件查询",
-            "query_range_config": "🔍 测距查询",
-            "query_camera_calib": "🔍 标定查询",
-            "report_device_status": "📊 设备状态",
-            "report_alarm": "📊 告警",
-            "report_img": "📊 成像",
-            "report_high_range": "📊 高精度测距",
-            "report_range_result": "📊 测距结果",
-            "report_task": "📊 任务",
-            "response": "↩ 响应",
-            "ack": "✅ ACK",
-            "heartbeat": "💓 心跳",
-            "http_request": "🌐 HTTP请求",
-            "ws_message": "🔌 WS消息",
-            "udp_message": "📡 UDP消息",
-            "tcp_message": "🔌 TCP消息",
-        }
-        return labels.get(cat, f"📄 {cat}")
+    def _get_selected_endpoint_id(self) -> str:
+        item = self.tree.currentItem()
+        if not item:
+            return ""
+        data = item.data(0, Qt.UserRole)
+        if not data:
+            return ""
+        if data[0] == "endpoint":
+            return data[1]
+        if data[0] == "template":
+            parent = item.parent()
+            if parent:
+                parent_data = parent.data(0, Qt.UserRole)
+                if parent_data and parent_data[0] == "endpoint":
+                    return parent_data[1]
+        return ""
 
-    def _on_item_double_clicked(self, item: QTreeWidgetItem, column: int):
+    def _on_item_clicked(self, item: QTreeWidgetItem, column: int):
         data = item.data(0, Qt.UserRole)
         if not data:
             return
@@ -252,8 +220,6 @@ class ProjectPanel(QWidget):
             self.scenario_selected.emit(obj_id)
         elif kind == "environment":
             self.environment_selected.emit(obj_id)
-        elif kind == "project":
-            self._edit_project_info()
 
     def _show_context_menu(self, pos):
         item = self.tree.itemAt(pos)
@@ -291,14 +257,14 @@ class ProjectPanel(QWidget):
             edit_action = menu.addAction("✏ 编辑")
             edit_action.triggered.connect(lambda: self.endpoint_selected.emit(obj_id))
             menu.addSeparator()
-            add_to_env_menu = menu.addMenu("📋 添加到环境")
-            project = self.project_manager.current_project
-            if project:
-                for env in project.environments:
-                    env_action = add_to_env_menu.addAction(env.name)
-                    env_action.triggered.connect(lambda checked, eid=obj_id, envid=env.id: self._add_ep_to_env(eid, envid))
+            add_tpl_action = menu.addAction("➕ 添加消息模板")
+            add_tpl_action.triggered.connect(lambda: self._add_template_to_endpoint(obj_id))
+            menu.addSeparator()
+            rename_action = menu.addAction("✏ 重命名")
+            rename_action.triggered.connect(lambda: self._rename_endpoint(obj_id))
             menu.addSeparator()
             remove_from_env_menu = menu.addMenu("📋 从环境移除")
+            project = self.project_manager.current_project
             if project:
                 for env in project.environments:
                     if obj_id in env.endpoint_ids:
@@ -312,11 +278,13 @@ class ProjectPanel(QWidget):
             edit_action = menu.addAction("✏ 编辑")
             edit_action.triggered.connect(lambda: self.template_selected.emit(obj_id))
             menu.addSeparator()
+            rename_action = menu.addAction("✏ 重命名")
+            rename_action.triggered.connect(lambda: self._rename_template(obj_id))
+            menu.addSeparator()
             delete_action = menu.addAction("🗑 删除")
             delete_action.triggered.connect(lambda: self._delete_template(obj_id))
 
         elif kind == "scenario":
-            run_action = menu.addAction("▶ 运行场景")
             edit_action = menu.addAction("✏ 编辑")
             edit_action.triggered.connect(lambda: self.scenario_selected.emit(obj_id))
             menu.addSeparator()
@@ -338,14 +306,6 @@ class ProjectPanel(QWidget):
             add_action = menu.addAction("➕ 新建环境")
             add_action.triggered.connect(self._add_environment)
 
-        elif kind == "ep_root":
-            add_action = menu.addAction("➕ 新建端点")
-            add_action.triggered.connect(self._add_endpoint)
-
-        elif kind == "tpl_root":
-            add_action = menu.addAction("➕ 新建模板")
-            add_action.triggered.connect(self._add_template)
-
         elif kind == "scenario_root":
             add_action = menu.addAction("➕ 新建场景")
             add_action.triggered.connect(self._add_scenario)
@@ -356,81 +316,6 @@ class ProjectPanel(QWidget):
             menu.addSeparator()
             save_action = menu.addAction("💾 保存项目")
             save_action.triggered.connect(self._save_project)
-
-        elif kind == "category":
-            add_action = menu.addAction("➕ 新建模板")
-            add_action.triggered.connect(self._add_template)
-
-        elif kind == "frame_rule":
-            edit_action = menu.addAction("✏ 编辑")
-            edit_action.triggered.connect(lambda: self._edit_frame_rule(obj_id))
-            menu.addSeparator()
-            rename_action = menu.addAction("✏ 重命名")
-            rename_action.triggered.connect(lambda: self._rename_frame_rule(obj_id))
-            menu.addSeparator()
-            delete_action = menu.addAction("🗑 删除")
-            delete_action.triggered.connect(lambda: self._delete_frame_rule(obj_id))
-
-        elif kind == "environment":
-            start_action = menu.addAction("▶ 启动环境")
-            start_action.triggered.connect(lambda: self.environment_start_requested.emit(obj_id))
-            stop_action = menu.addAction("⏹ 停止环境")
-            stop_action.triggered.connect(lambda: self.environment_stop_requested.emit(obj_id))
-            menu.addSeparator()
-            add_ep_action = menu.addAction("➕ 添加端点到环境")
-            add_ep_action.triggered.connect(lambda: self._add_endpoint_to_environment(obj_id))
-            manage_vars_action = menu.addAction("🔧 管理环境变量")
-            manage_vars_action.triggered.connect(lambda: self._manage_environment_variables(obj_id))
-            menu.addSeparator()
-            rename_action = menu.addAction("✏ 重命名")
-            rename_action.triggered.connect(lambda: self._rename_environment(obj_id))
-            delete_action = menu.addAction("🗑 删除")
-            delete_action.triggered.connect(lambda: self._delete_environment(obj_id))
-
-        elif kind == "endpoint":
-            edit_action = menu.addAction("✏ 编辑")
-            edit_action.triggered.connect(lambda: self.endpoint_selected.emit(obj_id))
-            menu.addSeparator()
-            rename_action = menu.addAction("✏ 重命名")
-            rename_action.triggered.connect(lambda: self._rename_endpoint(obj_id))
-            menu.addSeparator()
-            add_to_env_menu = menu.addMenu("📋 添加到环境")
-            project = self.project_manager.current_project
-            if project:
-                for env in project.environments:
-                    env_action = add_to_env_menu.addAction(env.name)
-                    env_action.triggered.connect(lambda checked, eid=obj_id, envid=env.id: self._add_ep_to_env(eid, envid))
-            menu.addSeparator()
-            remove_from_env_menu = menu.addMenu("📋 从环境移除")
-            if project:
-                for env in project.environments:
-                    if obj_id in env.endpoint_ids:
-                        env_action = remove_from_env_menu.addAction(env.name)
-                        env_action.triggered.connect(lambda checked, eid=obj_id, envid=env.id: self._remove_ep_from_env(eid, envid))
-            menu.addSeparator()
-            delete_action = menu.addAction("🗑 删除")
-            delete_action.triggered.connect(lambda: self._delete_endpoint(obj_id))
-
-        elif kind == "template":
-            edit_action = menu.addAction("✏ 编辑")
-            edit_action.triggered.connect(lambda: self.template_selected.emit(obj_id))
-            menu.addSeparator()
-            rename_action = menu.addAction("✏ 重命名")
-            rename_action.triggered.connect(lambda: self._rename_template(obj_id))
-            menu.addSeparator()
-            delete_action = menu.addAction("🗑 删除")
-            delete_action.triggered.connect(lambda: self._delete_template(obj_id))
-
-        elif kind == "scenario":
-            run_action = menu.addAction("▶ 运行场景")
-            edit_action = menu.addAction("✏ 编辑")
-            edit_action.triggered.connect(lambda: self.scenario_selected.emit(obj_id))
-            menu.addSeparator()
-            rename_action = menu.addAction("✏ 重命名")
-            rename_action.triggered.connect(lambda: self._rename_scenario(obj_id))
-            menu.addSeparator()
-            delete_action = menu.addAction("🗑 删除")
-            delete_action.triggered.connect(lambda: self._delete_scenario(obj_id))
 
         menu.exec(self.tree.viewport().mapToGlobal(pos))
 
@@ -471,15 +356,64 @@ class ProjectPanel(QWidget):
                 name=f"新{items[idx][0]}",
                 type=EndpointType(ep_type),
             )
-            self.project_manager.current_project.endpoints.append(ep)
+            project = self.project_manager.current_project
+            project.endpoints.append(ep)
+
+            cur_item = self.tree.currentItem()
+            if cur_item:
+                data = cur_item.data(0, Qt.UserRole)
+                if data:
+                    env_id_to_add = ""
+                    if data[0] == "environment":
+                        env_id_to_add = data[1]
+                    elif data[0] == "endpoint":
+                        parent = cur_item.parent()
+                        if parent:
+                            parent_data = parent.data(0, Qt.UserRole)
+                            if parent_data and parent_data[0] == "environment":
+                                env_id_to_add = parent_data[1]
+                    elif data[0] == "template":
+                        parent = cur_item.parent()
+                        if parent:
+                            parent_data = parent.data(0, Qt.UserRole)
+                            if parent_data and parent_data[0] == "environment":
+                                env_id_to_add = parent_data[1]
+                            elif parent_data and parent_data[0] == "endpoint":
+                                gp = parent.parent()
+                                if gp:
+                                    gp_data = gp.data(0, Qt.UserRole)
+                                    if gp_data and gp_data[0] == "environment":
+                                        env_id_to_add = gp_data[1]
+                    if env_id_to_add:
+                        for env in project.environments:
+                            if env.id == env_id_to_add:
+                                env.endpoint_ids.append(ep.id)
+                                self.logger.info(f"端点 {ep.name} 已添加到环境 {env.name}")
+                                break
+
             self.project_changed.emit()
             self.logger.info(f"添加端点: {ep.name}")
 
-    def _add_template(self):
+    def _add_template_to_selected(self):
+        ep_id = self._get_selected_endpoint_id()
+        if ep_id:
+            self._add_template_to_endpoint(ep_id)
+        else:
+            project = self.project_manager.current_project
+            if not project or not project.endpoints:
+                self.logger.warn("请先创建端点")
+                return
+            items = [f"{ep.name}" for ep in project.endpoints]
+            item, ok = QInputDialog.getItem(self, "选择端点", "为哪个端点添加模板:", items, 0, False)
+            if ok:
+                idx = items.index(item)
+                self._add_template_to_endpoint(project.endpoints[idx].id)
+
+    def _add_template_to_endpoint(self, ep_id: str):
         name, ok = QInputDialog.getText(self, "新建模板", "模板名称:", text="新模板")
         if ok and name:
             from protocol_workbench.core.models import new_id
-            tpl = MessageTemplate(id=new_id(), name=name)
+            tpl = MessageTemplate(id=new_id(), name=name, endpoint_id=ep_id)
             self.project_manager.current_project.message_templates.append(tpl)
             self.project_changed.emit()
             self.logger.info(f"新建模板: {name}")
@@ -517,47 +451,6 @@ class ProjectPanel(QWidget):
                     self.project_changed.emit()
                 break
 
-    def _rename_scenario(self, sc_id: str):
-        project = self.project_manager.current_project
-        if not project:
-            return
-        for sc in project.scenarios:
-            if sc.id == sc_id:
-                name, ok = QInputDialog.getText(self, "重命名场景", "新名称:", text=sc.name)
-                if ok and name:
-                    sc.name = name
-                    self.project_changed.emit()
-                break
-
-    def _rename_frame_rule(self, fr_id: str):
-        project = self.project_manager.current_project
-        if not project:
-            return
-        for fr in project.frame_rules:
-            if fr.id == fr_id:
-                name, ok = QInputDialog.getText(self, "重命名分帧规则", "新名称:", text=fr.name)
-                if ok and name:
-                    fr.name = name
-                    self.project_changed.emit()
-                break
-
-    def _save_project(self):
-        if self.project_manager.current_project:
-            try:
-                self.project_manager.save_project()
-                self.logger.info("项目已保存")
-            except Exception as e:
-                QMessageBox.critical(self, "错误", f"保存失败: {e}")
-
-    def _edit_project_info(self):
-        project = self.project_manager.current_project
-        if not project:
-            return
-        name, ok = QInputDialog.getText(self, "编辑项目", "项目名称:", text=project.name)
-        if ok:
-            project.name = name
-            self.project_changed.emit()
-
     def _rename_environment(self, env_id: str):
         project = self.project_manager.current_project
         if not project:
@@ -583,9 +476,10 @@ class ProjectPanel(QWidget):
         project = self.project_manager.current_project
         if not project:
             return
-        reply = QMessageBox.question(self, "确认删除", "确定要删除此端点吗？")
+        reply = QMessageBox.question(self, "确认删除", "确定要删除此端点吗？关联的模板也将一并删除。")
         if reply == QMessageBox.Yes:
             project.endpoints = [e for e in project.endpoints if e.id != ep_id]
+            project.message_templates = [t for t in project.message_templates if t.endpoint_id != ep_id]
             for env in project.environments:
                 env.endpoint_ids = [eid for eid in env.endpoint_ids if eid != ep_id]
             self.project_changed.emit()
@@ -644,6 +538,23 @@ class ProjectPanel(QWidget):
                     self.logger.info(f"分帧规则已更新: {updated.name}")
                 break
 
+    def _save_project(self):
+        if self.project_manager.current_project:
+            try:
+                self.project_manager.save_project()
+                self.logger.info("项目已保存")
+            except Exception as e:
+                QMessageBox.critical(self, "错误", f"保存失败: {e}")
+
+    def _edit_project_info(self):
+        project = self.project_manager.current_project
+        if not project:
+            return
+        name, ok = QInputDialog.getText(self, "编辑项目", "项目名称:", text=project.name)
+        if ok:
+            project.name = name
+            self.project_changed.emit()
+
     def _add_endpoint_to_environment(self, env_id: str):
         project = self.project_manager.current_project
         if not project:
@@ -658,7 +569,7 @@ class ProjectPanel(QWidget):
 
         available = [ep for ep in project.endpoints if ep.id not in env.endpoint_ids]
         if not available:
-            QMessageBox.information(self, "提示", "所有端点已在此环境中")
+            QMessageBox.information(self, "提示", "所有端点已在此环境中，或尚未创建端点")
             return
 
         items = [f"{self._endpoint_icon(ep.type)} {ep.name}" for ep in available]

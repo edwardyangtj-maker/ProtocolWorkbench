@@ -331,6 +331,7 @@ class HeartbeatConfig:
 class MessageTemplate:
     id: str = field(default_factory=new_id)
     name: str = ""
+    endpoint_id: str = ""
     category: TemplateCategory = TemplateCategory.MESSAGE
     payload_type: PayloadType = PayloadType.JSON
     frame_rule_id: str = ""
@@ -347,6 +348,7 @@ class MessageTemplate:
         return {
             "id": self.id,
             "name": self.name,
+            "endpoint_id": self.endpoint_id,
             "category": self.category.value,
             "payload_type": self.payload_type.value,
             "frame_rule_id": self.frame_rule_id,
@@ -367,6 +369,7 @@ class MessageTemplate:
         return cls(
             id=d.get("id", new_id()),
             name=d.get("name", ""),
+            endpoint_id=d.get("endpoint_id", ""),
             category=TemplateCategory(migrated_cat),
             payload_type=PayloadType(d.get("payload_type", "json")),
             frame_rule_id=d.get("frame_rule_id", ""),

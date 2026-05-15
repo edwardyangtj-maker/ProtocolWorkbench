@@ -64,6 +64,7 @@ class TemplatePanel(QWidget):
         self.project_manager = project_manager
         self.template_engine = template_engine
         self.logger = logger
+        self._filtered_endpoint_ids: list[str] = []
         self._setup_ui()
 
     def _setup_ui(self):
@@ -202,15 +203,15 @@ class TemplatePanel(QWidget):
     def refresh(self):
         self._populate_table()
 
-    def set_environment_filter(self, mode: str):
-        if mode == "upper_computer":
-            self.env_mode_label.setText("🟢 上位机模拟模式 - 上报帧/响应帧")
-            self.env_mode_label.setStyleSheet(
-                "padding:4px 12px; border-radius:4px; background:#1a3a2a; color:#a6e3a1; font-weight:bold;")
-        else:
-            self.env_mode_label.setText("🔵 后端测试模式 - 命令帧/参数帧/查询帧")
+    def set_endpoint_ids_filter(self, endpoint_ids: list[str]):
+        self._filtered_endpoint_ids = endpoint_ids
+        self._populate_table()
+        if endpoint_ids:
+            self.env_mode_label.setText(f"🔗 已过滤: {len(endpoint_ids)} 个端点的模板")
             self.env_mode_label.setStyleSheet(
                 "padding:4px 12px; border-radius:4px; background:#1a2a3a; color:#89b4fa; font-weight:bold;")
+        else:
+            self.env_mode_label.setText("")
 
     def select_template(self, template_id: str):
         project = self.project_manager.current_project
@@ -229,6 +230,10 @@ class TemplatePanel(QWidget):
 
         filter_cat = self.filter_combo.currentData()
         templates = project.message_templates
+
+        if self._filtered_endpoint_ids:
+            templates = [t for t in templates if t.endpoint_id in self._filtered_endpoint_ids or not t.endpoint_id]
+
         if filter_cat != "all" and not str(filter_cat).startswith("__sep_"):
             templates = [t for t in templates if t.category.value == filter_cat]
 
@@ -297,9 +302,10 @@ class TemplatePanel(QWidget):
         project = self.project_manager.current_project
         if not project:
             return
+        ep_id = self._filtered_endpoint_ids[0] if self._filtered_endpoint_ids else ""
         name, ok = QInputDialog.getText(self, "新建模板", "模板名称:", text="新模板")
         if ok and name:
-            tpl = MessageTemplate(id=new_id(), name=name, content="{\n  \n}")
+            tpl = MessageTemplate(id=new_id(), name=name, endpoint_id=ep_id, content="{\n  \n}")
             project.message_templates.append(tpl)
             self.refresh()
             self.logger.info(f"新建模板: {name}")
@@ -311,7 +317,7 @@ class TemplatePanel(QWidget):
         for tpl in project.message_templates:
             if tpl.id == template_id:
                 from protocol_workbench.core.models import new_id
-                new_tpl = MessageTemplate(id=new_id(), name=tpl.name + "_copy")
+                new_tpl = MessageTemplate(id=new_id(), name=tpl.name + "_copy", endpoint_id=tpl.endpoint_id)
                 new_tpl.category = tpl.category
                 new_tpl.payload_type = tpl.payload_type
                 new_tpl.content = tpl.content
