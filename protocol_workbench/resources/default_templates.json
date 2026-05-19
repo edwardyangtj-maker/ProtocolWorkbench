@@ -395,8 +395,7 @@
             "pitch_deg": 3.2,
             "calibration_distance_m": 2415.0,
             "alarm_threshold_mm": 10.0,
-            "laser_power_board1_val": 0,
-            "laser_power_board2_val": 0
+            "laser_power": 0
           }
         },
         {
