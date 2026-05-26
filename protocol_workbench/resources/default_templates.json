@@ -383,7 +383,7 @@
           "name": "写入测距点",
           "category": "param_monitor_point",
           "msgType": "parameter",
-          "theme": "monitor_point_write",
+          "theme": "highrange_point_write",
           "content": {
             "target": "monitor_point",
             "point_id": "POINT_001",
@@ -402,7 +402,7 @@
           "name": "修改测距点",
           "category": "param_monitor_point",
           "msgType": "parameter",
-          "theme": "monitor_point_modify",
+          "theme": "highrange_point_modify",
           "content": {
             "target": "monitor_point",
             "point_id": "POINT_001",
@@ -532,7 +532,7 @@
           "name": "相机标定点保存",
           "category": "param_camera_param",
           "msgType": "parameter",
-          "theme": "camera_calib_point_set",
+          "theme": "update_camera_calib_point",
           "content": {
             "target": "camera",
             "zoom": 5,
